@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.foundation.clickable
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -76,11 +77,15 @@ fun LoginScreen(navController: NavController) {
         ) {
             Text("Don’t have an Account? ", fontSize = 12.sp)
             Text(
-                "Create One",
+                text = "Create one",
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp,
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.clickable {
+                    navController.navigate("createAccount")
+                }
             )
+
         }
 
         Spacer(modifier = Modifier.height(32.dp))
