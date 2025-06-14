@@ -12,32 +12,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import com.example.ecom_assign.R
-
-val ClashDisplay = FontFamily(
-    Font(R.font.clash_display_bold, FontWeight.Bold)
-)
 
 @Composable
 fun SplashScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF8E6EF8)), // Purple background
-        contentAlignment = Alignment.Center // ✅ This aligns the Text to the center
+            .background(color = Color(0xFF8E6EF8)),
+        contentAlignment = Alignment.Center
     ) {
-        // "Clot" Text at center
         Text(
             text = "Clot",
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
-            fontFamily = ClashDisplay
+            color = Color.White
+            // Remove fontFamily until you add the font file
         )
 
-        // White bottom capsule at the bottom
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
