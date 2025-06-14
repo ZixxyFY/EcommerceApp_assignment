@@ -13,9 +13,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.compose.material3.TextFieldDefaults
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
 
     Column(
@@ -46,16 +48,10 @@ fun LoginScreen() {
                 .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp)),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF5F5F5),
                 unfocusedContainerColor = Color(0xFFF5F5F5),
-                disabledContainerColor = Color(0xFFF5F5F5),
-                errorContainerColor = Color(0xFFF5F5F5),
-                focusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color(0xFFF5F5F5),
                 unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                errorIndicatorColor = Color.Transparent,
-                focusedPlaceholderColor = Color.Gray.copy(alpha = 0.4f),
-                unfocusedPlaceholderColor = Color.Gray.copy(alpha = 0.4f)
+                focusedIndicatorColor = Color.Transparent
             )
         )
 
@@ -89,18 +85,25 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        SocialButton(R.drawable.ic_apple, "Continue With Apple")
+        // Social buttons navigate to password screen
+        SocialButton(R.drawable.ic_apple, "Continue With Apple") {
+            navController.navigate("password")
+        }
         Spacer(modifier = Modifier.height(12.dp))
-        SocialButton(R.drawable.ic_google, "Continue With Google")
+        SocialButton(R.drawable.ic_google, "Continue With Google") {
+            navController.navigate("password")
+        }
         Spacer(modifier = Modifier.height(12.dp))
-        SocialButton(R.drawable.ic_facebook, "Continue With Facebook")
+        SocialButton(R.drawable.ic_facebook, "Continue With Facebook") {
+            navController.navigate("password")
+        }
     }
 }
 
 @Composable
-fun SocialButton(iconResId: Int, text: String) {
+fun SocialButton(iconResId: Int, text: String, onClick: () -> Unit) {
     Button(
-        onClick = { /* Handle social login */ },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),

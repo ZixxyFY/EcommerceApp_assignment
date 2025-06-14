@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.ecom_assign.ui.theme.EcommerceApp_assignmentTheme
 import kotlinx.coroutines.delay
 
@@ -19,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppEntryPoint() // Entry point handling Splash and Login screens
+                    AppEntryPoint()
                 }
             }
         }
@@ -28,17 +31,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppEntryPoint() {
+    val navController = rememberNavController()
     var showSplash by remember { mutableStateOf(true) }
 
-    // Delay coroutine: waits 2 seconds before showing LoginScreen
     LaunchedEffect(Unit) {
         delay(2000L)
         showSplash = false
     }
 
     if (showSplash) {
-        SplashScreen() // From SplashScreen.kt
+        SplashScreen()
     } else {
-        LoginScreen() // From LoginScreen.kt
+        NavHost(navController = navController, startDestination = "login") {
+            composable("login") { LoginScreen(navController) }
+            composable("password") { PasswordScreen() }
+        }
     }
 }
