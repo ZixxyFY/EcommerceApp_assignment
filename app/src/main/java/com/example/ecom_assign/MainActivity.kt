@@ -3,40 +3,42 @@ package com.example.ecom_assign
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.ecom_assign.ui.theme.EcommerceApp_assignmentTheme
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                SplashScreen()
+            EcommerceApp_assignmentTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    AppEntryPoint() // Entry point handling Splash and Login screens
+                }
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppEntryPoint() {
+    var showSplash by remember { mutableStateOf(true) }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    EcommerceApp_assignmentTheme {
-        Greeting("Android")
+    // Delay coroutine: waits 2 seconds before showing LoginScreen
+    LaunchedEffect(Unit) {
+        delay(2000L)
+        showSplash = false
+    }
+
+    if (showSplash) {
+        SplashScreen() // From SplashScreen.kt
+    } else {
+        LoginScreen() // From LoginScreen.kt
     }
 }
