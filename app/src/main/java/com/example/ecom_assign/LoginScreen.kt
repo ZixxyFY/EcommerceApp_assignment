@@ -21,24 +21,42 @@ fun LoginScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(start = 24.dp, end = 24.dp, top = 100.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Sign in",
-            fontSize = 30.sp,
+            fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        OutlinedTextField(
+        TextField(
             value = email,
             onValueChange = { email = it },
-            placeholder = { Text("Email Address") },
+            placeholder = {
+                Text(
+                    text = "Email Address",
+                    color = Color.Gray.copy(alpha = 0.4f)
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp)),
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color(0xFFF5F5F5),
+                unfocusedContainerColor = Color(0xFFF5F5F5),
+                disabledContainerColor = Color(0xFFF5F5F5),
+                errorContainerColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent,
+                focusedPlaceholderColor = Color.Gray.copy(alpha = 0.4f),
+                unfocusedPlaceholderColor = Color.Gray.copy(alpha = 0.4f)
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -54,14 +72,22 @@ fun LoginScreen() {
             Text("Continue", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Row {
-            Text("Don’t have an Account ? ")
-            Text("Create One", fontWeight = FontWeight.Bold, color = Color.Black)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text("Don’t have an Account? ", fontSize = 12.sp)
+            Text(
+                "Create One",
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = Color.Black
+            )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         SocialButton(R.drawable.ic_apple, "Continue With Apple")
         Spacer(modifier = Modifier.height(12.dp))
@@ -73,16 +99,17 @@ fun LoginScreen() {
 
 @Composable
 fun SocialButton(iconResId: Int, text: String) {
-    OutlinedButton(
+    Button(
         onClick = { /* Handle social login */ },
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(28.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
+        colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFF5F5F5),
             contentColor = Color.Black
-        )
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
