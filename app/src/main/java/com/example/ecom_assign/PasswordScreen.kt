@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/ecom_assign/PasswordScreen.kt
 package com.example.ecom_assign
 
 import androidx.compose.foundation.background
@@ -12,58 +13,75 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ecom_assign.ui.theme.BackgroundLightGray
+import com.example.ecom_assign.ui.theme.PrimaryPurple
+import com.example.ecom_assign.ui.theme.TextBlack // Make sure TextBlack is imported
 
 @Composable
 fun PasswordScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+            .padding(top = 56.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        Text("Enter Password", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        // --- MODIFIED: Screen Title ---
+        Text(
+            "Sign in", // Changed from "Enter Password"
+            style = MaterialTheme.typography.headlineLarge
+        )
+        // --- END MODIFIED ---
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp)) // Adjusted spacing after title
 
-        TextField(
+        // InputField remains the same
+        InputField(
             value = password,
             onValueChange = { password = it },
-            placeholder = { Text("Password", color = Color.Gray.copy(alpha = 0.4f)) },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp)),
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF5F5F5),
-                unfocusedContainerColor = Color(0xFFF5F5F5),
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            )
+            placeholder = "Password",
+            isPassword = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // --- MODIFIED: Button Text ---
         Button(
             onClick = { /* Handle login - navigate to main app */ },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
             shape = RoundedCornerShape(28.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C6BFF))
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
         ) {
-            Text("Sign In", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("Continue", style = MaterialTheme.typography.titleLarge) // Changed from "Sign In"
         }
+        // --- END MODIFIED ---
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Forgot Password?",
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier.clickable {
-                navController.navigate(Screen.ForgotPassword.route)
-            }
-        )
+        // --- MODIFIED: "Forgot Password? Reset" Link ---
+        Row(
+            // Removed horizontalArrangement.Center to default to start alignment
+            modifier = Modifier.fillMaxWidth(), // Fill width to respect horizontal padding
+            verticalAlignment = Alignment.CenterVertically // For vertical alignment if texts have different heights
+        ) {
+            Text(
+                text = "Forgot Password?",
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Normal, color = TextBlack) // Normal weight for "Forgot Password?"
+            )
+            Spacer(modifier = Modifier.width(4.dp)) // Small space between the two text parts
+            Text(
+                text = "Reset",
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = TextBlack), // Bold and black for "Reset"
+                modifier = Modifier.clickable {
+                    navController.navigate(Screen.ForgotPassword.route) // "Reset" part is reactive
+                }
+            )
+        }
+        // --- END MODIFIED ---
     }
 }
