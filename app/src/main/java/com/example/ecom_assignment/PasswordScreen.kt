@@ -44,7 +44,11 @@ fun PasswordScreen(navController: NavController, email: String) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            navController.navigate("home") // Change to actual Home route
+                            // Ensure this matches your actual Home screen route
+                            navController.navigate(Screen.Home.route) {
+                                // Clear the back stack for email/password login too
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
                         } else {
                             errorMessage = task.exception?.message
                         }
