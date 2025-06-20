@@ -1,4 +1,4 @@
-package com.example.ecom_assign
+package com.example.ecom_assignment
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

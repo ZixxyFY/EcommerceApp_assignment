@@ -1,5 +1,5 @@
 // app/src/main/java/com/example/ecom_assign/ForgotPassword.kt
-package com.example.ecom_assign
+package com.example.ecom_assignment
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,8 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.ecom_assign.ui.theme.PrimaryPurple
-import com.example.ecom_assign.ui.theme.TextBlack
+import com.example.ecom_assignment.ui.theme.PrimaryPurple
+import com.example.ecom_assignment.ui.theme.TextBlack
+import com.google.firebase.auth.FirebaseAuth
+
 
 @Composable
 fun ForgotPasswordScreen(navController: NavController) {
@@ -43,8 +45,10 @@ fun ForgotPasswordScreen(navController: NavController) {
 
         Button(
             onClick = {
-                // Handle password reset - show success message or navigate back
-                navController.navigate(Screen.Login.route)
+                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                    .addOnSuccessListener {
+                        navController.navigate("home")
+                    }
             },
             modifier = Modifier
                 .fillMaxWidth()

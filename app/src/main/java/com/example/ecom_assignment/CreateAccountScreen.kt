@@ -1,5 +1,5 @@
 // app/src/main/java/com/example/ecom_assign/CreateAccountScreen.kt
-package com.example.ecom_assign
+package com.example.ecom_assignment
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,10 +16,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import com.example.ecom_assign.ui.theme.BackgroundLightGray
-import com.example.ecom_assign.ui.theme.PrimaryPurple
-import com.example.ecom_assign.ui.theme.TextBlack
-import com.example.ecom_assign.ui.theme.TextGrayPlaceholder
+import com.example.ecom_assignment.ui.theme.BackgroundLightGray
+import com.example.ecom_assignment.ui.theme.PrimaryPurple
+import com.example.ecom_assignment.ui.theme.TextBlack
+import com.example.ecom_assignment.ui.theme.TextGrayPlaceholder
 
 @Composable
 fun CreateAccountScreen(navController: NavController) {

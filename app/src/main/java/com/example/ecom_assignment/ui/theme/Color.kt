@@ -1,5 +1,5 @@
 // app/src/main/java/com/example/ecom_assign/ui/theme/Color.kt
-package com.example.ecom_assign.ui.theme
+package com.example.ecom_assignment.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

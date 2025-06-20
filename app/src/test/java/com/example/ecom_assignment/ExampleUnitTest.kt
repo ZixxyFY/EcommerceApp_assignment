@@ -1,4 +1,4 @@
-package com.example.ecom_assign
+package com.example.ecom_assignment
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.ecom_assign
+package com.example.ecom_assignment
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,12 +8,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.ecom_assign.ui.theme.EcommerceApp_assignmentTheme
+import com.example.ecom_assignment.ui.theme.EcommerceApp_assignmentTheme
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ Initialize Firebase
+        FirebaseApp.initializeApp(this)
+
         setContent {
             EcommerceApp_assignmentTheme {
                 Surface(

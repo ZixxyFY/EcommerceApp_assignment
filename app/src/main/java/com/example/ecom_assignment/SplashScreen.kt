@@ -1,5 +1,5 @@
 // app/src/main/java/com/example/ecom_assign/SplashScreen.kt
-package com.example.ecom_assign
+package com.example.ecom_assignment
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
-import com.example.ecom_assign.ui.theme.PrimaryPurple // Import custom color
+import com.example.ecom_assignment.ui.theme.PrimaryPurple // Import custom color
 
 @Composable
 fun SplashScreen() {
@@ -41,7 +41,7 @@ fun SplashScreen() {
 @Composable
 fun SplashScreenPreview() {
     // Wrap with your theme for accurate preview
-    com.example.ecom_assign.ui.theme.EcommerceApp_assignmentTheme {
+    com.example.ecom_assignment.ui.theme.EcommerceApp_assignmentTheme {
         SplashScreen()
     }
 }
