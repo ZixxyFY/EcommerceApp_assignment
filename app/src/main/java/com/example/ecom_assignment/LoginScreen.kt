@@ -161,6 +161,19 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // <<< ADD PHONE LOGIN BUTTON HERE >>>
+        SocialLoginButton(
+            iconRes = R.drawable.ic_phone, // You'll need to add an ic_phone drawable
+            text = "Continue with Phone",
+            onClick = {
+                navController.navigate(Screen.PhoneAuth.route)
+            },
+            enabled = !isLoading,
+            iconColor = Color.Black // Or PrimaryPurple, depending on your icon's design
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        // <<< END ADDITION >>>
+
         SocialLoginButton(
             iconRes = R.drawable.ic_google,
             text = "Continue with Google",
@@ -176,7 +189,7 @@ fun LoginScreen(navController: NavController) {
                     }
             },
             enabled = !isLoading,
-            iconColor = Color.Unspecified // To ensure the Google icon uses its original colors
+            iconColor = Color.Unspecified
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -188,7 +201,7 @@ fun LoginScreen(navController: NavController) {
                 Toast.makeText(context, "Apple Sign-In not implemented.", Toast.LENGTH_SHORT).show()
             },
             enabled = !isLoading,
-            iconColor = Color.Unspecified // To ensure the Apple icon uses its original colors
+            iconColor = Color.Unspecified
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -200,7 +213,7 @@ fun LoginScreen(navController: NavController) {
                 Toast.makeText(context, "Facebook Sign-In not implemented.", Toast.LENGTH_SHORT).show()
             },
             enabled = !isLoading,
-            iconColor = Color.Unspecified // To ensure the Facebook icon uses its original colors
+            iconColor = Color.Unspecified
         )
 
         if (isLoading) {

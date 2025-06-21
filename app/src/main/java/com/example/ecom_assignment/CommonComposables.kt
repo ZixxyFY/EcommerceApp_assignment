@@ -10,9 +10,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardOptions // <<< MAKE SURE THIS IS IMPORTED
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp // Import for sp unit if you want to use it for custom font sizes
+import androidx.compose.ui.unit.sp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,7 +21,9 @@ fun InputField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    // <<< THIS IS THE CRUCIAL ADDITION FOR KEYBOARDOPTIONS >>>
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default // Default to common options
 ) {
     OutlinedTextField(
         value = value,
@@ -31,7 +33,7 @@ fun InputField(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions.Default
+        keyboardOptions = keyboardOptions // <<< THIS IS WHERE IT'S USED
     )
 }
 
@@ -41,19 +43,17 @@ fun SocialLoginButton(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    // Add iconColor parameter for more control
-    iconColor: Color = Color.Unspecified // Default to Unspecified to use icon's original color if not explicitly set
+    iconColor: Color = Color.Unspecified
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            // Adjusted height for better visual balance
-            .height(48.dp), // Slightly smaller than 56.dp
+            .height(48.dp),
         shape = RoundedCornerShape(28.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.White,
-            contentColor = Color.Black // This is for the text color and button border color
+            contentColor = Color.Black
         ),
         enabled = enabled
     ) {
@@ -65,13 +65,13 @@ fun SocialLoginButton(
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = null,
-                modifier = Modifier.size(20.dp), // Slightly reduced icon size
-                tint = iconColor // Apply the iconColor here
+                modifier = Modifier.size(20.dp),
+                tint = iconColor
             )
-            Spacer(modifier = Modifier.width(12.dp)) // Slightly reduced spacing
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp) // Adjusted text style and size
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp)
             )
         }
     }
