@@ -81,6 +81,8 @@ dependencies {
     // Coroutines support for Play Services
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
 
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
     // Debug and test
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

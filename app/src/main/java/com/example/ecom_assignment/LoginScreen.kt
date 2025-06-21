@@ -1,4 +1,3 @@
-
 package com.example.ecom_assignment
 
 import android.app.Activity
@@ -19,8 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.ecom_assignment.ui.theme.InputField
@@ -40,7 +37,6 @@ fun LoginScreen(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
 
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -107,39 +103,48 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         InputField(value = email, onValueChange = { email = it }, placeholder = "Email Address")
-        Spacer(modifier = Modifier.height(16.dp))
-        InputField(value = password, onValueChange = { password = it }, placeholder = "Password", isPassword = true)
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    isLoading = true
-                    auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            isLoading = false
-                            if (task.isSuccessful) {
-                                navController.navigate(Screen.Home.route) {
-                                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                                }
-                            } else {
-                                errorMessage = task.exception?.localizedMessage ?: "Error signing in."
-                            }
-                        }
+                if (email.isNotBlank()) {
+                    navController.navigate(Screen.Password.createRoute(email))
                 } else {
-                    errorMessage = "Please enter email and password."
+                    errorMessage = "Please enter your email address."
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(28.dp),
+            enabled = !isLoading
         ) {
-            Text("Sign In with Email", style = MaterialTheme.typography.titleLarge)
+            Text("Continue with Email", style = MaterialTheme.typography.titleLarge)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Forgot Password?",
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Normal, color = TextBlack)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "Reset",
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = TextBlack),
+                modifier = Modifier.clickable {
+                    navController.navigate(Screen.ForgotPassword.route)
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -169,7 +174,9 @@ fun LoginScreen(navController: NavController) {
                         isLoading = false
                         errorMessage = "Google One Tap Sign-In failed: ${it.localizedMessage}"
                     }
-            }
+            },
+            enabled = !isLoading,
+            iconColor = Color.Unspecified // To ensure the Google icon uses its original colors
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -179,7 +186,9 @@ fun LoginScreen(navController: NavController) {
             text = "Continue with Apple",
             onClick = {
                 Toast.makeText(context, "Apple Sign-In not implemented.", Toast.LENGTH_SHORT).show()
-            }
+            },
+            enabled = !isLoading,
+            iconColor = Color.Unspecified // To ensure the Apple icon uses its original colors
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -189,7 +198,9 @@ fun LoginScreen(navController: NavController) {
             text = "Continue with Facebook",
             onClick = {
                 Toast.makeText(context, "Facebook Sign-In not implemented.", Toast.LENGTH_SHORT).show()
-            }
+            },
+            enabled = !isLoading,
+            iconColor = Color.Unspecified // To ensure the Facebook icon uses its original colors
         )
 
         if (isLoading) {

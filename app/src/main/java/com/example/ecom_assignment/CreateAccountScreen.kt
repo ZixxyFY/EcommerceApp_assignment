@@ -1,6 +1,7 @@
-// app/src/main/java/com/example/ecom_assign/CreateAccountScreen.kt
 package com.example.ecom_assignment
 
+import android.util.Log // For Log.e calls
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,25 +9,43 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import com.example.ecom_assignment.ui.theme.BackgroundLightGray
+import androidx.navigation.compose.rememberNavController // For @Preview
+
+// Import your reusable composables from the correct package (ui.theme)
+import com.example.ecom_assignment.ui.theme.InputField
 import com.example.ecom_assignment.ui.theme.PrimaryPurple
 import com.example.ecom_assignment.ui.theme.TextBlack
-import com.example.ecom_assignment.ui.theme.TextGrayPlaceholder
 
+// Firebase imports
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore // <<< Firestore Import
+import com.google.firebase.Timestamp // <<< Timestamp Import
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccountScreen(navController: NavController) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance() // Get Firestore instance
+
+    var firstName by remember { mutableStateOf("") } // State for First Name
+    var lastName by remember { mutableStateOf("") }  // State for Last Name
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            errorMessage = null
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -42,45 +61,111 @@ fun CreateAccountScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        InputField(firstName, { firstName = it }, "Firstname", false)
+        // UI elements for First Name and Last Name (ADDED)
+        InputField(
+            value = firstName,
+            onValueChange = { firstName = it },
+            placeholder = "First Name",
+            isPassword = false
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        InputField(lastName, { lastName = it }, "Lastname", false)
+
+        InputField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            placeholder = "Last Name",
+            isPassword = false
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        InputField(email, { email = it }, "Email Address", false)
+        // End of new UI elements
+
+        InputField(
+            value = email,
+            onValueChange = { email = it },
+            placeholder = "Email Address",
+            isPassword = false
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
-        InputField(password, { password = it }, "Password", isPassword = true)
+
+        InputField(
+            value = password,
+            onValueChange = { password = it },
+            placeholder = "Password",
+            isPassword = true
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                navController.navigate(Screen.Login.route)
+                // Input validation (now includes first and last name)
+                if (firstName.isNotBlank() && lastName.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
+                    isLoading = true
+                    // Step 1: Create user with Firebase Authentication
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { authTask ->
+                            if (authTask.isSuccessful) {
+                                val firebaseUser = authTask.result?.user
+                                firebaseUser?.let { user ->
+                                    // Step 2: If Auth user created, store additional data in Firestore
+                                    val userData = hashMapOf(
+                                        "userId" to user.uid, // Store Firebase Auth UID as unique identifier
+                                        "firstName" to firstName,
+                                        "lastName" to lastName,
+                                        "email" to email,
+                                        "createdAt" to Timestamp.now() // Add creation timestamp
+                                    )
+
+                                    firestore.collection("users") // Your Firestore collection name
+                                        .document(user.uid) // Use the user's UID as the document ID
+                                        .set(userData) // Store the HashMap
+                                        .addOnSuccessListener {
+                                            isLoading = false
+                                            Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+                                            // Navigate to home screen after both Auth and Firestore are done
+                                            navController.navigate(Screen.Home.route) {
+                                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                            }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            isLoading = false
+                                            errorMessage = "Failed to save user data: ${e.localizedMessage}"
+                                            Log.e("CreateAccount", "Firestore write failed for user ${user.uid}: ${e.message}", e)
+                                            // IMPORTANT: If Firestore write fails, delete the FirebaseAuth user
+                                            // to prevent orphaned accounts. This makes the create account process atomic.
+                                            user.delete().addOnCompleteListener { deleteTask ->
+                                                if (deleteTask.isSuccessful) {
+                                                    Log.i("CreateAccount", "Firestore write failed, FirebaseAuth user ${user.uid} deleted to rollback.")
+                                                } else {
+                                                    Log.e("CreateAccount", "Firestore write failed, failed to delete FirebaseAuth user ${user.uid}.", deleteTask.exception)
+                                                }
+                                            }
+                                        }
+                                } ?: run {
+                                    isLoading = false
+                                    errorMessage = "Account created, but user object was null. Data not saved."
+                                }
+                            } else {
+                                isLoading = false
+                                errorMessage = authTask.exception?.localizedMessage ?: "Account creation failed."
+                            }
+                        }
+                } else {
+                    errorMessage = "Please fill all fields (First Name, Last Name, Email, Password)."
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
             shape = RoundedCornerShape(28.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
+            enabled = !isLoading // Disable button while loading
         ) {
-            Text("Continue", style = MaterialTheme.typography.titleLarge)
+            Text("Create Account", style = MaterialTheme.typography.titleLarge)
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // --- MODIFIED SECTION: Removed Social Login Buttons ---
-        // Previously:
-        // SocialLoginButton(R.drawable.ic_apple, "Continue with Apple")
-        // Spacer(modifier = Modifier.height(12.dp))
-        // SocialLoginButton(R.drawable.ic_google, "Continue with Google")
-        // Spacer(modifier = Modifier.height(12.dp))
-        // SocialLoginButton(R.drawable.ic_facebook, "Continue with Facebook")
-        // --- END MODIFIED SECTION ---
-
-        // You might want to adjust this spacer if the removal of social buttons
-        // makes the "Already have an account?" text too high or low.
-        // For now, keeping it as is, might need more space if it's the last element.
-        // Let's add a larger spacer if social buttons are removed, to push "Already have an account?" down
-        Spacer(modifier = Modifier.height(48.dp)) // Increased spacer for visual balance
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -88,7 +173,7 @@ fun CreateAccountScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Already have an account?",
+                "Already have an Account?",
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -96,82 +181,22 @@ fun CreateAccountScreen(navController: NavController) {
                 text = "Sign in",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = TextBlack),
                 modifier = Modifier.clickable {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
-    }
-}
 
-// InputField and SocialLoginButton are now commonly used.
-// It's a good practice to move these reusable Composables to a separate file,
-// e.g., `app/src/main/java/com/example/ecom_assign/ui/components/CommonComposables.kt`
-// if they are used in many screens. For now, keeping them in CreateAccountScreen.kt
-// as they were previously, but be mindful of their reuse.
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InputField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    isPassword: Boolean
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = placeholder,
-                color = TextGrayPlaceholder,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-        },
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = BackgroundLightGray,
-            unfocusedContainerColor = BackgroundLightGray,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            errorIndicatorColor = Color.Transparent
-        ),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = TextBlack)
-    )
-}
-
-// This composable might be in CreateAccountScreen.kt or a separate file like CommonComposables.kt
-@Composable
-fun SocialLoginButton(iconRes: Int, text: String, onClick: () -> Unit) { // ADD onClick parameter
-    Button(
-        onClick = onClick, // Use the passed-in onClick lambda
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(28.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = BackgroundLightGray),
-        elevation = ButtonDefaults.buttonElevation(0.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text,
-                color = TextBlack,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
+        if (isLoading) {
+            Spacer(modifier = Modifier.height(16.dp))
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCreateAccountScreen() {
+    CreateAccountScreen(navController = rememberNavController())
 }

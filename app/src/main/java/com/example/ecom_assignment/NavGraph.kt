@@ -6,7 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.ecom_assignment.ui.screens.*
+
+import com.example.ecom_assignment.LoginScreen
+import com.example.ecom_assignment.CreateAccountScreen
+import com.example.ecom_assignment.ForgotPasswordScreen
+import com.example.ecom_assignment.PasswordScreen
+import com.example.ecom_assignment.ui.screens.HomeScreen
+
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
