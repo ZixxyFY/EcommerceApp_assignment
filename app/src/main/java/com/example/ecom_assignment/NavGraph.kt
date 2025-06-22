@@ -11,6 +11,8 @@ import com.example.ecom_assignment.LoginScreen
 import com.example.ecom_assignment.CreateAccountScreen
 import com.example.ecom_assignment.ForgotPasswordScreen
 import com.example.ecom_assignment.PasswordScreen
+import com.example.ecom_assignment.LocationScreen
+import com.example.ecom_assignment.LocationHistoryScreen
 
 import com.example.ecom_assignment.ui.screens.HomeScreen
 
@@ -28,7 +30,8 @@ fun AppNavGraph(navController: NavHostController) {
             PasswordScreen(navController, email)
         }
         composable(Screen.Home.route) { HomeScreen(navController) }
-
+        composable(Screen.Location.route) { LocationScreen(navController) }
+        composable(Screen.LocationHistory.route) { LocationHistoryScreen(navController) }
         composable(Screen.PhoneAuth.route) { PhoneAuthScreen(navController) }
     }
 }

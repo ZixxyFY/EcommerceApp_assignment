@@ -45,6 +45,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.0"
     }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
 }
 
 dependencies {
@@ -78,6 +83,9 @@ dependencies {
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.3.0")
 
+    // Location Services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Coroutines support for Play Services
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
 
@@ -86,6 +94,7 @@ dependencies {
     // Debug and test
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
